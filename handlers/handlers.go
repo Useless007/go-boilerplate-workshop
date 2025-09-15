@@ -25,7 +25,13 @@ func UserCreate(c *fiber.Ctx) error {
 		// we can simply use - Name: c.FormValue("user")
 		Name: utils.CopyString(c.FormValue("user")),
 	}
-	database.Insert(user)
+	err := database.Insert(user)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error(),
+		})
+	}
 
 	return c.JSON(fiber.Map{
 		"success": true,

@@ -2,58 +2,48 @@ package database
 
 import (
 	"boilerplate/models"
-	"fmt"
-	"sync"
+	"log"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var (
-	db []*models.User
-	mu sync.Mutex
-	nextID = 0
+	db    *gorm.DB
+	dbErr error
 )
 
-// Connect with database
+// DB Connect
 func Connect() {
-	db = make([]*models.User, 0)
-	fmt.Println("Connected with Database")
+	db, dbErr = gorm.Open(sqlite.Open("users.db"), &gorm.Config{})
+	if dbErr != nil {
+		log.Fatal("Failed to connect to database: ", dbErr)
+	}
+
+	// Migrate the schema
+	dbErr = db.AutoMigrate(&models.User{})
+	if dbErr != nil {
+		log.Fatal("Failed to migrate database:", dbErr)
+	}
+
+	log.Println("Database connection established")
 }
 
-func Insert(user *models.User) { //create
-	mu.Lock()
-	defer mu.Unlock()
-	user.ID = nextID
-	nextID++
-	db = append(db, user)
+
+func Insert(user *models.User) error {
+	return db.Create(user).Error
 }
 
-func Get() []*models.User { //read
-	return db
+func Get() []models.User {
+	var users []models.User
+	db.Find(&users)
+	return users
 }
 
 func Update(id int, newName string) error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	for _, user := range db {
-		if user.ID == id {
-			user.Name = newName
-			return nil
-		}
-	}
-
-	return fmt.Errorf("user with id %d not found", id)
+	return db.Model(&models.User{}).Where("id = ?", id).Update("name", newName).Error
 }
 
 func Delete(id int) error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	for i, user := range db {
-		if user.ID == id {
-			db = append(db[:i], db[i+1:]...)
-			return nil
-		}
-	}
-
-	return fmt.Errorf("user with id %d not found", id)
+	return db.Delete(&models.User{}, id).Error
 }
