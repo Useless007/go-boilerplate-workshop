@@ -2,6 +2,7 @@ package database
 
 import (
 	"boilerplate/models"
+	"boilerplate/utils"
 	"log"
 
 	"gorm.io/driver/sqlite"
@@ -29,8 +30,12 @@ func Connect() {
 	log.Println("Database connection established")
 }
 
-
 func Insert(user *models.User) error {
+	hashed, err := utils.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashed
 	return db.Create(user).Error
 }
 
@@ -38,6 +43,18 @@ func Get() []models.User {
 	var users []models.User
 	db.Find(&users)
 	return users
+}
+
+func GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	err := db.Where("email = ?", email).First(&user).Error
+	return &user, err
+}
+
+func GetUserByID(id int) (*models.User, error) {
+	var user models.User
+	err := db.Where("id = ?", id).First(&user).Error
+	return &user, err
 }
 
 func Update(id int, newName string) error {

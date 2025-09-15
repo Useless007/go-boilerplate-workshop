@@ -13,22 +13,56 @@
 			<div class="text-center">
 				<img src="/img/logo.svg" class="img-fluid" width="300px" />
 			</div>
-			<h4>Add user</h4>
-			<form class="input-group mb-3">
-				<input
-					type="text"
-					class="form-control"
-					placeholder="Username"
-					id="user"
-				/>
-				<div class="input-group-append">
-					<button class="btn btn-outline-primary" type="submit" id="add_user">
-						Add User
-					</button>
+
+			<!-- Login/Register Section -->
+			<div id="auth-section">
+				<ul class="nav nav-tabs mb-3" id="authTab" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">Login</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab">Register</button>
+					</li>
+				</ul>
+				<div class="tab-content" id="authTabContent">
+					<div class="tab-pane fade show active" id="login" role="tabpanel">
+						<form id="login-form" class="mb-3">
+							<input type="text" class="form-control mb-2" placeholder="Email" id="login-email" required />
+							<input type="password" class="form-control mb-2" placeholder="Password" id="login-password" required />
+							<button class="btn btn-primary w-100" type="submit">Login</button>
+						</form>
+					</div>
+					<div class="tab-pane fade" id="register" role="tabpanel">
+						<form id="register-form" class="mb-3">
+							<input type="text" class="form-control mb-2" placeholder="Name" id="register-name" required />
+							<input type="text" class="form-control mb-2" placeholder="Email" id="register-email" required />
+							<input type="password" class="form-control mb-2" placeholder="Password" id="register-password" required />
+							<button class="btn btn-success w-100" type="submit">Register</button>
+						</form>
+					</div>
 				</div>
-			</form>
-			<h4>Users</h4>
-			<ul class="list-group" id="users"></ul>
+			</div>
+
+			<!-- User Section (hidden if not logged in) -->
+			<div id="user-section" style="display:none;">
+				<h4>Add user</h4>
+				<form class="input-group mb-3">
+					<input
+						type="text"
+						class="form-control"
+						placeholder="Username"
+						id="user"
+					/>
+					<div class="input-group-append">
+						<button class="btn btn-outline-primary" type="submit" id="add_user">
+							Add User
+						</button>
+					</div>
+				</form>
+				<h4>Users</h4>
+				<ul class="list-group" id="users"></ul>
+				<button class="btn btn-secondary mt-3" id="logout">Logout</button>
+			</div>
 		</div>
 
 		<script src="/js/app.js"></script>

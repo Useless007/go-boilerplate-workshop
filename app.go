@@ -3,6 +3,7 @@ package main
 import (
 	"boilerplate/database"
 	"boilerplate/handlers"
+	"boilerplate/middleware"
 	"strings"
 
 	"flag"
@@ -57,8 +58,12 @@ func main() {
 	v1 := app.Group("/api/v1")
 
 	// Bind handlers
+	v1.Post("/register", handlers.Register)
+	v1.Post("/login", handlers.Login)
+	v1.Use(middleware.JWTMiddleware()) // ใช้ middleware ตรวจสอบ JWT token สำหรับทุก endpoint ด้านล่างนี้
 	v1.Get("/users", handlers.UserList)
-	v1.Post("/users", handlers.UserCreate)
+	v1.Get("/me", handlers.Me)
+	v1.Post("/users", middleware.RoleMiddleware("ADMIN"), handlers.UserCreate)
 	v1.Put("/users/:id", handlers.UserUpdate)
 	v1.Delete("/users/:id", handlers.UserDelete)
 
